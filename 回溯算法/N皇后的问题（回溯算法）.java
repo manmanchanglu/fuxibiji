@@ -1,0 +1,119 @@
+//N皇后的问题
+链接：https://www.nowcoder.com/questionTerminal/c77ac599d0764433a5946610a7626768
+来源：牛客网
+
+/** * 著名n皇后问题 
+* 题目解析： 
+* n个皇后摆放在n*n的棋盘格中，使得横、竖和两个对角线方向均不会同时出现两个皇后 
+* <p> * 解题思路： * 由于需要在n*n的棋盘格中放入n个皇后，就必须每一行放一个
+* 否则就会出现一行有两个皇后的情况，会发生冲突。 
+* 那么就可以递归的解决每一行问题 
+* 最核心的问题是：如何能快速判断不合法的情况，即快速剪枝 
+* 同行或同列的冲突可以简单用一个数组来考虑，难点是两条对角线
+* 对角线条数2*n-1 
+* 左对角线：坐标x+y是一个唯一定值  x+y      范围为0到2*n-2 
+* 右对角线：坐标x-y是一个唯一定值  x-y+n-1  范围为0到2*n-2 
+* **/
+    private List<List<String>> result;//声明全局变量，用来保存符合条件的结果集
+    public List<List<String>> solveNQueens(int n) {
+        result = new ArrayList<>();
+        char[][] queen = new char[n][n];//存储路径
+        for (int i = 0; i < n; i++) { //用'.'填充
+            Arrays.fill(queen[i], '.');
+        }
+        backtrack(queen, 0, n);
+        return result;
+    }
+
+    private void backtrack(char[][] queen, int i, int n) {//按行放置皇后
+        if (i == n) { //i = n，匹配结束，这是一种结果
+            List<String> item = new ArrayList<>();
+            for (int k = 0; k < n; k++) {
+                item.add(String.valueOf(queen[k]));
+            }
+            result.add(item);
+            return;
+        }
+        for (int j = 0; j < n; j++) {//找到符合标准的列
+            if (!judge(queen, i, j)) continue; //判断在【i,j】放一个'Q'是否合理，不合理，则j++
+            queen[i][j] = 'Q';//做选择
+            backtrack(queen, i + 1, n); //每一行只能放一个'Q'，换下一行
+            queen[i][j] = '.'; //回溯，还原【i,j】，j++试一试
+        }
+    }
+    
+    private boolean judge(char[][] queen, int i, int j) { 
+        for (int k = 0; k < i; k++) { //这一竖
+            if (queen[k][j] == 'Q') return false;
+        }
+        for (int k = i - 1, z = j - 1; k >= 0 && z >= 0; k--, z--) { //【i,j】 到 左上角
+            if (queen[k][z] == 'Q') return false;
+        }
+        for (int k = i - 1, z = j + 1; k >= 0 && z < queen.length; k--, z++) { //【i,j】 到 右上角
+            if (queen[k][z] == 'Q') return false;
+        }
+        return true;
+    }
+}
+
+作者：zhen-zhen-16
+链接：https://leetcode-cn.com/problems/eight-queens-lcci/solution/java-hui-su-kan-bu-dong-suan-wo-shu-xi-lie-by-zhen/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+//自己写的版本
+class Solution {
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> res=new ArrayList<>();
+        char[][] nums=new char[n][n];
+        for(int i=0;i<n;i++){
+            Arrays.fill(nums[i],'.');
+        } 
+        xunzhao(nums,n,0,res);
+        return res;
+
+    }
+    public void xunzhao(char[][] nums,int n,int i,List<List<String>> res){
+        if(i==n){
+            List<String> list=new ArrayList<>();
+            for(int j=0;j<n;j++){
+                list.add(String.valueOf(nums[j]));//这里如果使用，Arrays.toString()就转化成字符串数组了
+            }
+            res.add(list);
+            return;           
+        }
+        for(int a=0;a<n;a++){
+            if(!panduan(nums,i,a))
+                continue;
+            nums[i][a]='Q';
+            xunzhao(nums,n,i+1,res);
+            nums[i][a]='.';
+        }
+    }
+    public boolean panduan(char[][] nums,int i,int a){
+        for(int j=i-1;j>=0;j--){//判断列
+            if(nums[j][a]=='Q'){
+                return false;
+            }
+        }
+        int q=a+1;
+        int w=i-1;
+        while(q<nums.length&&w>=0){//判断左上
+            if(nums[w][q]=='Q'){
+                return false;
+            }
+            q++;
+            w--;
+        }
+        int e=a-1;
+        int r=i-1;
+        while(e>=0&&r>=0){//判断左上
+            if(nums[r][e]=='Q'){
+                return false;
+            }
+            r--;
+            e--;
+        }
+        return true;
+    }
+}
